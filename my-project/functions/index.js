@@ -5,13 +5,15 @@ const gmailPassword = functions.config().gmail.password;
 const adminEmail = functions.config().admin.email;
 
 // 送信に使用するメールサーバーの設定
-const mailTransport = nodemailer.createTransport({
-  service: "gmail",
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  secure: false, 
+  port: 25,
   auth: {
-    user: gmailEmail,
-    pass: gmailPassword
+   user: gmailEmail,
+   pass: gmailPassword
   }
-});
+})
 
 // 管理者用のメールテンプレート
 const adminContents = data => {
@@ -39,7 +41,7 @@ exports.sendMail = functions.https.onCall(async (data, context) => {
 
   // 管理者へのメール送信
   try {
-    await mailTransport.sendMail(adminMail);
+    await transporter.sendMail(adminMail);
    } catch (e) {
     console.error(`send failed. ${e}`);
     throw new functions.https.HttpsError('internal', 'send failed');
